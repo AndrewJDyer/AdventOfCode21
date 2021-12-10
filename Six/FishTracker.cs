@@ -2,15 +2,15 @@
 
 internal class FishTracker
 {
-    private readonly Illumination illumination;
+    private readonly IOceanModel model;
 
-    public FishTracker(IEnumerable<Lanternfish> initialFishes) => illumination = new(initialFishes);
+    public FishTracker(IOceanModel model) => this.model = model;
 
     public void IncrementDays(int newDays)
     {
         for (int i = 0; i < newDays; i++)
-            illumination.NewDay();
+            model.NewDay();
     }
 
-    public int CountFishes() => illumination.Count;
+    public long CountFishes() => model.Count;
 }

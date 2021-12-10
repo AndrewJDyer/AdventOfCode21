@@ -1,10 +1,13 @@
 ﻿namespace Six;
 
-internal class Illumination
+/// <summary>
+/// Model for part 1 (not performance-optimised)
+/// </summary>
+internal class Illumination : IOceanModel
 {
     private readonly List<Lanternfish> fishes = new();
 
-    public int Count => fishes.Count;
+    public long Count => fishes.Count;
 
     public Illumination(IEnumerable<Lanternfish> initialPopulation)
     {
