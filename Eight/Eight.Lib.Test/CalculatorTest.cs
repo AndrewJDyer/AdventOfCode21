@@ -6,11 +6,6 @@ namespace Eight.Lib.Test;
 
 public class CalculatorTest
 {
-    [SetUp]
-    public void Setup()
-    {
-    }
-
     [TestCase("ab", 1, ExpectedResult = 1)]
     [TestCase("bg", 1, ExpectedResult = 1)]
     [TestCase("ab", 4, ExpectedResult = 0)]
@@ -25,7 +20,7 @@ public class CalculatorTest
 
     [TestCase("abcdefg", 8, ExpectedResult = 1)]
     [TestCase("abcdefg", 1, ExpectedResult = 0)]
-    public int SingleWord(string word, params int[] digitsToCount)
+    public int Count_SingleWord(string word, params int[] digitsToCount)
     {
         var display = new Display(new[] { word }, new[] { word });
         var displays = new[] { display };
@@ -34,5 +29,15 @@ public class CalculatorTest
         return calc.Count(digitsToCount);
     }
 
-    private IEnumerable<string> GetWordCollection(params string[] words) => words;
+    [TestCase("bdfeagc degcf adegb gcdbe ebc dfgbce degafc fbgc dbafec bc", "degfc gdbec degfc decbg", ExpectedResult = 5353)]
+    [TestCase("acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab", "cdfeb cdfeb fcadb cdbaf", ExpectedResult = 5533)]
+    [TestCase("acedgfb cdfbe gcdfa fbcad dab cefabd cdfgeb eafb cagedb ab", "cdfeb fcadb cdfeb cdbaf", ExpectedResult = 5353)]
+    public int SumOutputs_SingleDisplay(string inputs, string outputs)
+    {
+        var display = new Display(inputs.Split(' '), outputs.Split(' '));
+        var displays = new[] { display };
+        var calc = new Calculator(displays);
+
+        return calc.SumOutputs();
+    }
 }

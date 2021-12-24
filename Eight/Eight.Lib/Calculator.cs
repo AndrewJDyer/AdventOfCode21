@@ -1,12 +1,16 @@
 ﻿using Eight.Parser;
 
-namespace Eight;
+namespace Eight.Lib;
 
 public class Calculator
 {
     private readonly IEnumerable<Display> displays;
 
     public Calculator(IEnumerable<Display> displays) => this.displays = displays;
+
+    public int SumOutputs() => displays.Sum(EvalutateDisplay);
+
+    private static int EvalutateDisplay(Display display) => new DisplayEvaluation(display).GetValue();
 
     public int Count(params int[] digitsToCount) => digitsToCount.Sum(Count);
 
@@ -18,7 +22,6 @@ public class Calculator
     {
         var possibleDigits = PossibleDigits(word);
         return possibleDigits.Count() == 1 && possibleDigits.Single() == digit;
-
     }
 
     private static IEnumerable<int> PossibleDigits(string word) =>

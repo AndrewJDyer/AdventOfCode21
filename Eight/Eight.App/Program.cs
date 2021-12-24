@@ -1,4 +1,6 @@
-﻿namespace Eight.App;
+﻿using Eight.Lib;
+
+namespace Eight.App;
 
 public class Program
 {
@@ -12,6 +14,7 @@ public class Program
         var display = parser.Parse();
 
         var calc = new Calculator(display);
-        Console.WriteLine(calc.Count(1, 4, 7, 8));
+        Console.WriteLine(calc.Count(1, 4, 7, 8));  //part 1
+        Console.WriteLine(calc.SumOutputs());  //part 2
     }
 }
