@@ -1,17 +1,16 @@
-﻿namespace Nine
+﻿namespace Nine;
+
+internal class RiskEvaluator
 {
-    internal class RiskEvaluator
+    private readonly Map map;
+
+    public RiskEvaluator(Map map) => this.map = map;
+
+    public int SumRisks()
     {
-        private readonly Map map;
+        var lowPoints = map.GetLowPoints();
+        var cumulativeRisk = lowPoints.Sum(h => 1 + h);
 
-        public RiskEvaluator(Map map) => this.map = map;
-
-        public int SumRisks()
-        {
-            var lowPoints = map.GetLowPoints();
-            var cumulativeRisk = lowPoints.Sum(h => 1 + h);
-
-            return cumulativeRisk;
-        }
+        return cumulativeRisk;
     }
 }
