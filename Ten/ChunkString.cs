@@ -18,7 +18,7 @@ internal class ChunkString
 
     public int CalculateErrorScore()
     {
-        while (index < text.Length)
+        for (index = 0; index < text.Length; index++)
         {
             try
             {
@@ -28,11 +28,36 @@ internal class ChunkString
             {
                 return ScoreChar();
             }
-            index++;
         }
 
         return 0;
     }
+
+    public long CalculateIncompleteScore()
+    {
+        if (CalculateErrorScore() != 0)
+            return 0;
+
+        return ScoreIncompleteChars();
+    }
+
+    private long ScoreIncompleteChars()
+    {
+        var score = 0L;
+        while (openingBrackets.Count > 0)
+            score = (score * 5) + ScoreIncompleteChar();
+
+        return score;
+    }
+
+    private int ScoreIncompleteChar() => bracketPairs[openingBrackets.Pop()] switch
+    {
+        ')' => 1,
+        ']' => 2,
+        '}' => 3,
+        '>' => 4,
+        _ => throw new InvalidCharException()
+    };
 
     private bool IsOpeningBracket() => bracketPairs.ContainsKey(GetCurrentChar());
 
