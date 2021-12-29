@@ -36,7 +36,7 @@ internal class Cave
 
         foreach (var cave in linkedCaves)
         {
-            if (cave.IsSmall && routeSoFar.HaveVisited(cave))
+            if (!routeSoFar.IsStepValid(cave))
                 continue;
 
             var extendedRoute = routeSoFar.Copy();
