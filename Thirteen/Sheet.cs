@@ -1,4 +1,6 @@
-﻿namespace Thirteen;
+﻿using System.Text;
+
+namespace Thirteen;
 
 internal class Sheet
 {
@@ -26,4 +28,22 @@ internal class Sheet
         dotLocations.Remove(coordinate);
         dotLocations.Add(translatedCoordinate);
     }
+
+    public override string ToString()
+    {
+        var width = dotLocations.Max(dot => dot.X);
+        var height = dotLocations.Max(dot => dot.Y);
+
+        var buf = new StringBuilder();
+        for (int y = 0; y <= height; y++)
+        {
+            for (int x = 0; x <= width; x++)
+                buf.Append(HasDotAt(x, y) ? '#' : ' ');
+            buf.AppendLine();
+        }
+
+        return buf.ToString();
+    }
+
+    private bool HasDotAt(int x, int y) => dotLocations.Contains(new(x, y));
 }
