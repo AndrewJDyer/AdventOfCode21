@@ -1,3 +1,3 @@
 ﻿namespace Fourteen;
 
-internal record InsertionRule(char FirstChar, char SecondChar, char InsertionChar);
+internal record InsertionRule(Pair Pair, char InsertionChar);

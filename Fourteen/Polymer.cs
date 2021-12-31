@@ -2,46 +2,78 @@
 
 internal class Polymer
 {
-    private readonly List<char> polymer;
-    private readonly Dictionary<(char, char), char> insertionRules;
-    private readonly Dictionary<char, int> elementCounts = new();
+    private readonly string template;
+    private readonly IReadOnlyDictionary<Pair, char> insertionRules;
+    private Dictionary<SubPolymer, long> pairs;
 
-    public IReadOnlyDictionary<char, int> ElementCounts => elementCounts;
+    public IReadOnlyDictionary<char, long> ElementCounts => CountElements();
 
     public Polymer(string template, IEnumerable<InsertionRule> rules)
     {
-        polymer = template.ToList();
-        insertionRules = rules.ToDictionary(x => (x.FirstChar, x.SecondChar), x => x.InsertionChar);
+        this.template = template;
+        insertionRules = rules.ToDictionary(x => x.Pair, x => x.InsertionChar);
+        pairs = ToSubPolymers(template, insertionRules);
+    }
 
-        foreach (var c in polymer)
-            AppendElementCount(c);
+    private static Dictionary<SubPolymer,long> ToSubPolymers(string template, IReadOnlyDictionary<Pair, char> rules)
+    {
+        var subPolymers = new Dictionary<SubPolymer, long>();
+        for (int i = 1; i < template.Length; i++)
+        {
+            var pair = new Pair(template[i - 1], template[i]);
+            var subPolymer = new SubPolymer(pair, rules);
+            if (subPolymers.ContainsKey(subPolymer))
+                subPolymers[subPolymer]++;
+            else
+                subPolymers[subPolymer] = 1;
+        }
+        return subPolymers;
     }
 
     public void RunRules(int iterations = 1)
     {
         for (int i = 0; i < iterations; i++)
-            RunRules();
-    }
-
-    private void RunRules()
-    {
-        for (int i = polymer.Count - 1; i > 0; i--)
         {
-            var firstChar = polymer[i - 1];
-            var secondChar = polymer[i];
-            if (insertionRules.TryGetValue((firstChar, secondChar), out var insertionChar))
-            {
-                polymer.Insert(i, insertionChar);
-                AppendElementCount(insertionChar);
-            }
+            Console.WriteLine($"Running iteration {i}");
+            RunRules();
         }
     }
 
-    private void AppendElementCount(char c)
-    {
-        if (!elementCounts.ContainsKey(c))
-            elementCounts[c] = 0;
+    private void RunRules() => pairs = FormNewPolymers();
 
-        elementCounts[c]++;
+    private Dictionary<SubPolymer, long> FormNewPolymers()
+    {
+        var newPairs = new Dictionary<SubPolymer, long>();
+        foreach(var kvp in pairs)
+        {
+            var newPolymers = kvp.Key.Iterate();
+            foreach (var polymer in newPolymers)
+            {
+                if (newPairs.ContainsKey(polymer))
+                    newPairs[polymer] += kvp.Value;
+                else
+                    newPairs[polymer] = kvp.Value;
+            }
+        }
+
+        return newPairs;
+    }
+
+    private IReadOnlyDictionary<char, long> CountElements()
+    {
+        var elements = insertionRules.Select(r => r.Value).Distinct();
+        return elements.ToDictionary(e => e, CountElement);
+    }
+
+    private long CountElement(char element)
+    {
+        var total = template[^1] == element ? 1L : 0L;
+        foreach (var kvp in pairs)
+        {
+            if (kvp.Key.FirstElement == element)
+                total += kvp.Value;
+        }
+
+        return total;
     }
 }

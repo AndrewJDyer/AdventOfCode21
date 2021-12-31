@@ -23,6 +23,7 @@ internal class Parser
         if (ruleLine.Length != 7)
             throw new InvalidOperationException($"Unexpected rule line {ruleLine}");
 
-        return new(ruleLine[0], ruleLine[1], ruleLine[6]);
+        var initialPair = new Pair(ruleLine[0], ruleLine[1]);
+        return new(initialPair, ruleLine[6]);
     }
 }
