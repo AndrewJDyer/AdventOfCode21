@@ -3,49 +3,56 @@
 internal class DijkstraPathFinder
 {
     private readonly CaveMap map;
-    private readonly Dictionary<Coordinate, NodeState> nodeStates;
+    private readonly Dictionary<Coordinate, int> visitedNodes = new();
+    private readonly Dictionary<Coordinate, int> unvisitedNeighbours = new();
 
-    public DijkstraPathFinder(CaveMap map)
-    {
-        this.map = map;
-        nodeStates = map.AllCoordinates.ToDictionary(c => c, _ => NodeState.Unvisited);
-    }
+    public DijkstraPathFinder(CaveMap map) => this.map = map;
 
     public int FindShortestPathLength()
     {
         foreach (var node in EnumerateNodesToVisit())
             VisitNode(node);
 
-        var endNodeState = nodeStates[map.End];
-        return endNodeState.Distance ?? throw new InvalidOperationException("Haven't reached the end yet");
+        if (visitedNodes.TryGetValue(map.End, out var shortestPathLength))
+            return shortestPathLength;
+
+        throw new InvalidOperationException("Haven't reached the end yet");
     }
 
-    private void VisitNode(Coordinate node) => nodeStates[node] = new(GetDistanceTo(node));
+    private void VisitNode(Coordinate node)
+    {
+        visitedNodes[node] = GetDistanceTo(node);
+        UpdateUnvisitedNeighbours(node);
+    }
+
+    private void UpdateUnvisitedNeighbours(Coordinate visitedNodoe)
+    {
+        unvisitedNeighbours.Remove(visitedNodoe);
+        foreach (var neighbour in GetUnvisitedNeighbours(visitedNodoe))
+        {
+            var distance = GetDistanceTo(neighbour);
+            unvisitedNeighbours[neighbour] = distance;
+        }
+    }
+
+    private IEnumerable<Coordinate> GetUnvisitedNeighbours(Coordinate visitedNode)
+        => map.GetAdjacentCoordinates(visitedNode).Where(c => !visitedNodes.ContainsKey(c));
 
     private IEnumerable<Coordinate> EnumerateNodesToVisit()
     {
+        int visitCount = 0;
         for (var node = map.Start; ; node = GetNextNodeToVisit())
         {
-            Console.WriteLine($"Visiting node {node}");
+            if (++visitCount % 100 == 0)
+                Console.WriteLine($"Visiting node {node}, count = {visitCount}");
+
             yield return node;
             if (node == map.End)
                 yield break;
         }
     }
 
-    private Coordinate GetNextNodeToVisit()
-    {
-        var unvisitedNodeDistances = GetPossibleNextNodes().ToDictionary(c => c, GetDistanceTo);
-        return unvisitedNodeDistances.OrderBy(kvp => kvp.Value).First().Key;
-    }
-
-    private IEnumerable<Coordinate> GetPossibleNextNodes()
-        => nodeStates
-            .Where(kvp => kvp.Value.Visited)
-            .Select(kvp => kvp.Key)
-            .SelectMany(map.GetAdjacentCoordinates)
-            .Where(c => !nodeStates[c].Visited)
-            .Distinct();
+    private Coordinate GetNextNodeToVisit() => unvisitedNeighbours.OrderBy(kvp => kvp.Value).First().Key;
 
     private int GetDistanceTo(Coordinate node)
     {
@@ -64,15 +71,8 @@ internal class DijkstraPathFinder
     {
         foreach (var neighbour in map.GetAdjacentCoordinates(node))
         {
-            var nodeState = nodeStates[neighbour];
-            if (nodeState.Distance.HasValue)
-                yield return nodeState.Distance.Value;
+            if (visitedNodes.TryGetValue(neighbour, out var distanceToNeighbour))
+                yield return distanceToNeighbour;
         }
-    }
-
-    private record NodeState(int? Distance)
-    {
-        public static NodeState Unvisited = new((int?)null);
-        public bool Visited => Distance.HasValue;
     }
 }
