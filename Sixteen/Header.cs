@@ -2,16 +2,20 @@
 
 internal class Header
 {
-    private const int LiteralTypeId = 4;
-
     public int Version { get; }
-    public int TypeId { get; }
-    public bool IsLiteral => TypeId == LiteralTypeId;
+    public TypeId TypeId { get; }
+    public bool IsLiteral => TypeId == TypeId.Literal;
     public bool IsOperator => !IsLiteral;
 
     public Header(bool[] bits)
     {
-        Version = new IntConversion(bits[..3]).Convert();
-        TypeId = new IntConversion(bits[3..]).Convert();
+        Version = ConvertVersion(bits[..3]);
+        TypeId = ConvertType(bits[3..]);
     }
+
+    private static int ConvertVersion(bool[] versionBits)
+        => (int)new IntConversion(versionBits).Convert();
+
+    private static TypeId ConvertType(bool[] typeBits)
+        => (TypeId)new IntConversion(typeBits).Convert();
 }

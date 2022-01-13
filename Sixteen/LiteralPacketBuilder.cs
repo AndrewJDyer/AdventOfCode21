@@ -13,7 +13,7 @@ internal class LiteralPacketBuilder
 
     public LiteralPacket Build() => new(header, GetLiteralValue());
 
-    private int GetLiteralValue()
+    private long GetLiteralValue()
     {
         var literalGroups = EnumerateLiteralGroups();
         var literalBinary = literalGroups.SelectMany(x => x);
@@ -23,7 +23,11 @@ internal class LiteralPacketBuilder
 
     private IEnumerable<bool[]> EnumerateLiteralGroups()
     {
-        for (var group = stream.GetNext(5); group[0]; group = stream.GetNext(5))
+        bool[] group;
+        do
+        {
+            group = stream.GetNext(5);
             yield return group[1..];
+        } while (group[0]);
     }
 }

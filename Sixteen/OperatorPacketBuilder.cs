@@ -33,7 +33,7 @@ internal class OperatorPacketBuilder
         return BuildSubPacketCountingBits(length);
     }
 
-    private IEnumerable<Packet> BuildSubPacketCountingBits(int bitCount)
+    private IEnumerable<Packet> BuildSubPacketCountingBits(long bitCount)
     {
         var initialBitsRemaining = stream.CountRemaining();
         while (initialBitsRemaining - stream.CountRemaining() < bitCount)
@@ -47,7 +47,7 @@ internal class OperatorPacketBuilder
         return BuildSubPacketsCountingPackets(length);
     }
 
-    private IEnumerable<Packet> BuildSubPacketsCountingPackets(int packetCount)
+    private IEnumerable<Packet> BuildSubPacketsCountingPackets(long packetCount)
     {
         for (int i = 0; i < packetCount; i++)
             yield return new PacketBuilder(stream).Build();

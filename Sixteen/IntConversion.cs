@@ -4,12 +4,12 @@ internal class IntConversion
 {
     private readonly Stack<bool> bits;
 
-    private int digitMultiplier = 1;
-    private int cumulativeValue;
+    private long digitMultiplier = 1;
+    private long cumulativeValue;
 
     public IntConversion(IEnumerable<bool> bits) => this.bits = new(bits);
 
-    public int Convert()
+    public long Convert()
     {
         while (bits.Count > 0)
             ConvertBit(bits.Pop());
@@ -23,5 +23,5 @@ internal class IntConversion
         digitMultiplier *= 2;
     }
 
-    private int GetDigitValue(bool bit) => bit ? digitMultiplier : 0;
+    private long GetDigitValue(bool bit) => bit ? digitMultiplier : 0;
 }

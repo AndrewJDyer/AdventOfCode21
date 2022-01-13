@@ -7,4 +7,6 @@ internal abstract class Packet
     public Packet(Header header) => Header = header;
 
     public abstract int SumVersions();
+
+    public abstract long Evaluate();
 }

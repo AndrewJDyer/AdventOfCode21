@@ -2,11 +2,13 @@
 
 internal class LiteralPacket : Packet
 {
-    public int Value { get; }
+    public long Value { get; }
 
-    public LiteralPacket(Header header, int value)
+    public LiteralPacket(Header header, long value)
         : base(header)
         => Value = value;
 
     public override int SumVersions() => Header.Version;
+
+    public override long Evaluate() => Value;
 }

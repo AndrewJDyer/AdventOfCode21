@@ -9,7 +9,7 @@ internal class PacketBuilder
     public Packet Build()
     {
         var header = BuildHeader();
-        return header.IsLiteral ? BuildLiteral(header) : BuildOperator(header);
+        return new LoggingPacket(header.IsLiteral ? BuildLiteral(header) : BuildOperator(header));
     }
 
     private Header BuildHeader()
