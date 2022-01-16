@@ -8,11 +8,13 @@ internal class ValidTrajectoryCollator
 
     public int FindMaxHeight() => Collate().Max(x => x.MaxHeight);
 
+    public int CountValidTrajectories() => Collate().Count();
+
     private IEnumerable<ValidTrajectory> Collate()
     {
-        for (int y = FindMinInitialVerticalSpeed(); y < FindMaxInitialVerticalSpeed(); y++)
+        for (int y = FindMinInitialVerticalSpeed(); y <= FindMaxInitialVerticalSpeed(); y++)
         {
-            for (int x = FindMinInitialHorizontalSpeed(); x < FindMaxInitialHorizontalSpeed(); x++)
+            for (int x = FindMinInitialHorizontalSpeed(); x <= FindMaxInitialHorizontalSpeed(); x++)
             {
                 var initialVelocity = new Velocity(x, y);
                 var probe = new Probe(initialVelocity);
@@ -45,7 +47,7 @@ internal class ValidTrajectoryCollator
         }
     }
 
-    private static int FindMinInitialVerticalSpeed() => 1;
+    private int FindMinInitialVerticalSpeed() => targetArea.YRange.Lower;
 
     private int FindMaxInitialHorizontalSpeed() => targetArea.XRange.Upper;
 
