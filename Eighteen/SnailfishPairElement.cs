@@ -18,6 +18,15 @@ internal class SnailfishPairElement : Element
         rightElement.Parent = this;
     }
 
+    private SnailfishPairElement Clone() => new(Clone(leftElement), Clone(rightElement));
+
+    private static Element Clone(Element element) => element switch
+    {
+        NumericElement numericElement => numericElement.Clone(),
+        SnailfishPairElement pairElement => pairElement.Clone(),
+        _ => throw new InvalidOperationException($"Cannot clone {element}")
+    };
+
     public override void Reduce()
     {
         if (DoExplosions() || DoSplits())
@@ -72,9 +81,9 @@ internal class SnailfishPairElement : Element
         FindNextNumberToTheRight()?.Add(rightVal);
 
         if (IsLeft)
-            Parent!.leftElement = new NumericElement(0, true);
+            Parent!.leftElement = new NumericElement(0);
         else
-            Parent!.rightElement = new NumericElement(0, false);
+            Parent!.rightElement = new NumericElement(0);
 
         return true;
     }
@@ -129,7 +138,7 @@ internal class SnailfishPairElement : Element
 
     public static SnailfishPairElement operator +(SnailfishPairElement left, SnailfishPairElement right)
     {
-        var sum = new SnailfishPairElement(left, right);
+        var sum = new SnailfishPairElement(left.Clone(), right.Clone());
         sum.Reduce();
         return sum;
     }

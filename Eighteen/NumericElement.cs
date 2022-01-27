@@ -2,14 +2,11 @@
 
 internal class NumericElement : Element
 {
-    private readonly bool left;
     private int value;
 
-    public NumericElement(int value, bool left)
-    {
-        this.value = value;
-        this.left = left;
-    }
+    public NumericElement(int value) => this.value = value;
+
+    public NumericElement Clone() => new(value);
 
     public override int GetMagnitude() => value;
 
@@ -19,8 +16,8 @@ internal class NumericElement : Element
         if (value <= 9)
             return false;
 
-        var leftVal = new NumericElement(value / 2, true);
-        var rightVal = new NumericElement(value - leftVal.value, false);
+        var leftVal = new NumericElement(value / 2);
+        var rightVal = new NumericElement(value - leftVal.value);
         splitElement = new SnailfishPairElement(leftVal, rightVal);
         return true;
     }

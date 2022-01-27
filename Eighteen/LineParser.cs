@@ -17,7 +17,7 @@ internal class LineParser
         return new SnailfishPairElement(left, right);
     }
 
-    private Element ParseElement(bool isLeft)
+    private Element ParseElement()
     {
         if (!enumerator.MoveNext())
             throw new InvalidOperationException("No text left");
@@ -32,18 +32,18 @@ internal class LineParser
         }
 
         if (Int32.TryParse(CurrentChar.ToString(), out var val))
-            return new NumericElement(val, isLeft);
+            return new NumericElement(val);
 
         throw new InvalidOperationException("Unexpected character");
     }
 
     private (Element Left, Element Right) ParsePair()
     {
-        var left = ParseElement(true);
+        var left = ParseElement();
         if (!enumerator.MoveNext() || CurrentChar != ',')
             throw new InvalidOperationException("Expected 2nd element in pair");
 
-        var right = ParseElement(false);
+        var right = ParseElement();
 
         return (left, right);
     }
